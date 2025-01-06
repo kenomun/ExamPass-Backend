@@ -3,7 +3,3 @@
     command = "npm start"
     env = "production"
     healthcheck = "/health"
-
-[plugins]
-  [[plugins.postgresql]]
-    name = "DATABASE_URL"
