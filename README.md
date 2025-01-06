@@ -34,6 +34,7 @@ DATABASE_URL=postgresql://usuario:contraseña@localhost:5432/exam_pass
 ## Ejecutar migraciones
 
 Prisma se utiliza para gestionar la base de datos. Ejecuta las migraciones para crear las tablas en PostgreSQL.
+npx prisma generate
 
 npx prisma migrate dev
 
