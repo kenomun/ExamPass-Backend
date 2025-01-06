@@ -1,0 +1,100 @@
+// Prisma Schema
+
+datasource db {
+  provider = "postgresql"  // O cualquier otro proveedor de base de datos (MySQL, SQLite, etc.)
+  url      = env("DATABASE_URL")  // Utiliza el URL configurado en .env
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model Roles {
+  id          Int      @id @default(autoincrement())
+  description String
+  Profiles    Profiles[]
+}
+
+model Profiles {
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String   @unique
+  roleId   Int
+  Role     Roles    @relation(fields: [roleId], references: [id])
+  Students Students?
+  Results  Result[]
+  Subjects profileSubject[]
+}
+
+model Students {
+  id          Int      @id @default(autoincrement())
+  schoolName  String
+  profileId   Int      @unique
+  Profile     Profiles @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+model Subjects {
+  id       Int              @id @default(autoincrement())
+  name     String
+  Tests    Test[]
+  Profiles profileSubject[]
+}
+
+model profileSubject {
+  id        Int      @id @default(autoincrement())
+  profileId Int
+  subjectId Int
+  isDone    Boolean
+  Profile   Profiles @relation(fields: [profileId], references: [id])
+  Subject   Subjects @relation(fields: [subjectId], references: [id])
+
+  @@unique([profileId, subjectId])
+}
+
+model Test {
+  id        Int        @id @default(autoincrement())
+  name      String
+  subjectId Int
+  Subject   Subjects   @relation(fields: [subjectId], references: [id])
+  Questions Questions[] 
+  Results   Result[]
+}
+
+model Questions {
+  id        Int       @id @default(autoincrement())
+  question String
+  contentId   Int
+  testId      Int
+  content   Content   @relation(fields: [contentId], references: [id])
+  Test      Test      @relation(fields: [testId], references: [id], onDelete: Cascade)
+  Answers   Answer[]  
+}
+
+model Content {
+  id          Int       @id @default(autoincrement())
+  description String
+  Questions   Questions[]
+}
+
+model Answer {
+  id          Int       @id @default(autoincrement())
+  answer     String
+  questionId  Int
+  isCorrect   Boolean
+  Question    Questions @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Result {
+  id         Int      @id @default(autoincrement())
+  profileId  Int
+  score     Float
+  testId     Int
+  profile    Profiles @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  test       Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  answers    Json
+  createdAt  DateTime @default(now())
+}
+
+
+
